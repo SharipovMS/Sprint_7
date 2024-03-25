@@ -12,28 +12,16 @@ class TestAddDelivery:
         payload = Delivery.generation_register_data_delivery_man(self)
         response = requests.post(Url.create_delivery_man, data=payload)
         Delivery.remove_delivery_man(payload)
-        assert response.status_code == 201
+        assert response.status_code == 201 and response.json().get('ok') == True
 
-    def test_add_delivery_success(self):
-        payload = Delivery.generation_register_data_delivery_man(self)
-        response = requests.post(Url.create_delivery_man, data=payload)
-        Delivery.remove_delivery_man(payload)
-        assert response.json().get('ok') == True
-
+    @allure.title('Тест на создание доставщика с теми же данными')
     def test_add_delivery_man_repeated_data_registration_status(self):
         payload = Delivery.generation_register_data_delivery_man(self)
         requests.post(Url.create_delivery_man, data=payload)
         response = requests.post(Url.create_delivery_man, data=payload)
         Delivery.remove_delivery_man(payload)
-        assert response.status_code == 409
+        assert response.status_code == 409 and response.json().get('message') == 'Этот логин уже используется. Попробуйте другой.'
 
-    @allure.title('Тест на создание доставщика с теми же данными')
-    def test_add_delivery_man_repeated_data_registration_chek_text_response(self):
-        payload = Delivery.generation_register_data_delivery_man(self)
-        requests.post(Url.create_delivery_man, data=payload)
-        response = requests.post(Url.create_delivery_man, data=payload)
-        Delivery.remove_delivery_man(payload)
-        assert response.json().get('message') == 'Этот логин уже используется. Попробуйте другой.'
 
     @allure.title('Создание доставщика используя не все обязательные поля')
     @pytest.mark.parametrize('field', ['login', 'password', 'firstName'])
